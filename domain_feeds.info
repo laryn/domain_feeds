@@ -1,0 +1,5 @@
+; $Id$
+name = "Domain Feeds"
+description = "Provides Domain Access Mappers for Feed Importers"
+core = 6.x
+package = Feeds

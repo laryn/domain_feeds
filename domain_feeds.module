@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * @file
+ * On behalf implementation of Feeds mapping API for domain_feeds.module.
+ */
+
+/**
+ * Implementation of hook_feeds_node_processor_targets_alter().
+ *
+ * @see FeedsNodeProcessor::getMappingTargets().
+ */
+function domain_feeds_feeds_node_processor_targets_alter(&$targets, $content_type) {
+  $options = array();
+  // Get the display format of the form element.
+  $format = domain_select_format();
+  foreach (domain_domains() as $data) {
+    // Cannot pass zero in checkboxes.
+    ($data['domain_id'] == 0) ? $key = -1 : $key = $data['domain_id'];
+    // The domain must be valid.
+    if ($data['valid'] || user_access('access inactive domains')) {
+      // Checkboxes must be filtered, select lists should not.
+      $targets['domains:'. $key] = array(
+        'name' => 'Publish to: '. (empty($format) ? check_plain($data['sitename']) : $data['sitename']),
+        'callback' => 'domain_feeds_set_target',
+        'description' => t('Domain access options.'),
+      );
+    }
+  }
+}
+
+/**
+ * Callback for mapping. Here is where the actual mapping happens.
+ *
+ * When the callback is invoked, $target contains the name of the field the
+ * user has decided to map to and $value contains the value of the feed item
+ * element the user has picked as a source.
+ */
+function domain_feeds_set_target($node, $target, $value) {
+  list($target, $sub_field) = explode(':', $target);
+
+  $field = isset($node->$target) ? $node->$target : array();
+  
+  if ($sub_field === -1 && $value) {
+    $field[$sub_field] = -1;
+  } else if ($value) {
+    $field[$sub_field] = $sub_field;
+  }
+  
+  $node->$target = $field;
+  $node->domain_site = 0;
+}
