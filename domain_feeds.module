@@ -16,7 +16,7 @@ function domain_feeds_feeds_node_processor_targets_alter(&$targets, $content_typ
   $format = domain_select_format();
   foreach (domain_domains() as $data) {
     // Cannot pass zero in checkboxes.
-    ($data['domain_id'] == 0) ? $key = -1 : $key = $data['domain_id'];
+    $key = ($data['domain_id'] == 0) ? -1 : $data['domain_id'];
     // The domain must be valid.
     if ($data['valid'] || user_access('access inactive domains')) {
       // Checkboxes must be filtered, select lists should not.
@@ -43,7 +43,8 @@ function domain_feeds_set_target($node, $target, $value) {
   
   if ($sub_field === -1 && $value) {
     $field[$sub_field] = -1;
-  } else if ($value) {
+  } 
+  else if ($value) {
     $field[$sub_field] = $sub_field;
   }
   
