@@ -1,6 +1,6 @@
 name = "Domain Feeds"
 description = "Provides Domain Access Mappers for Feed Importers"
-core = 6.x
+core = 7.x
 package = Feeds
 
 dependencies[] = domain

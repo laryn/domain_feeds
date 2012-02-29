@@ -6,11 +6,11 @@
  */
 
 /**
- * Implementation of hook_feeds_node_processor_targets_alter().
+ * Implementation of hook_feeds_processor_targets_alter().
  *
  * @see FeedsNodeProcessor::getMappingTargets().
  */
-function domain_feeds_feeds_node_processor_targets_alter(&$targets, $content_type) {
+function domain_feeds_feeds_processor_targets_alter(&$targets, $entity_type, $bundle_name) {
   $options = array();
   // Get the display format of the form element.
   $format = domain_select_format();
@@ -36,18 +36,17 @@ function domain_feeds_feeds_node_processor_targets_alter(&$targets, $content_typ
  * user has decided to map to and $value contains the value of the feed item
  * element the user has picked as a source.
  */
-function domain_feeds_set_target($node, $target, $value) {
+function domain_feeds_set_target($source, $entity, $target, $feed_element) {
   list($target, $sub_field) = explode(':', $target);
-
-  $field = isset($node->$target) ? $node->$target : array();
+  $field = isset($entity->$target) ? $entity->$target : array();
   
-  if ($sub_field === -1 && $value) {
+  if ($sub_field === -1 && $feed_element) {
     $field[$sub_field] = -1;
   } 
-  else if ($value) {
+  else if ($feed_element) {
     $field[$sub_field] = $sub_field;
   }
-  
-  $node->$target = $field;
-  $node->domain_site = 0;
+ 
+  $entity->$target = $field;
+  $entity->domain_site = 0;
 }
