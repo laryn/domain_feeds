@@ -27,6 +27,13 @@ function domain_feeds_feeds_processor_targets_alter(&$targets, $entity_type, $bu
       );
     }
   }
+
+  // Publish to All
+  $targets['domains:all'] = array(
+    'name' => 'Publish to: All',
+    'callback' => 'domain_feeds_set_target_all',
+    'description' => t('Domain access options.'),
+  );
 }
 
 /**
@@ -49,4 +56,20 @@ function domain_feeds_set_target($source, $entity, $target, $feed_element) {
  
   $entity->$target = $field;
   $entity->domain_site = 0;
+
+  return $node;
+}
+
+/**
+ * Callback for mapping. Here is where the actual mapping happens.
+ * 
+ * When the callback is invoked, $target contains the name of the field the
+ * user has decided to map to and $value contains the value of the feed item
+ * element the user has picked as a source.
+ */
+function domain_feeds_set_target_all($node, $target, $value) {
+  $node->domain_site = 1;
+  $node->domain_source = 0;
+  $node->domains = array(-1 => -1);
+  return $node;
 }
