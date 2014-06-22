@@ -45,7 +45,7 @@ function domain_feeds_feeds_processor_targets_alter(&$targets, $entity_type, $bu
  */
 function domain_feeds_set_target($source, $entity, $target, $feed_element) {
   list($target, $sub_field) = explode(':', $target);
-  $field = isset($entity->$target) ? $entity->$target : array();
+  $field = !empty($entity->$target) ? $entity->$target : array();
   
   if ($sub_field === -1 && $feed_element) {
     $field[$sub_field] = -1;
@@ -53,11 +53,13 @@ function domain_feeds_set_target($source, $entity, $target, $feed_element) {
   else if ($feed_element) {
     $field[$sub_field] = $sub_field;
   }
- 
-  $entity->$target = $field;
-  $entity->domain_site = 0;
 
-  return $node;
+  if (count($field)) {
+    $entity->$target = $field;
+    $entity->domain_site = 0;
+  }
+
+  return $entity;
 }
 
 /**
@@ -67,9 +69,9 @@ function domain_feeds_set_target($source, $entity, $target, $feed_element) {
  * user has decided to map to and $value contains the value of the feed item
  * element the user has picked as a source.
  */
-function domain_feeds_set_target_all($node, $target, $value) {
-  $node->domain_site = 1;
-  $node->domain_source = 0;
-  $node->domains = array(-1 => -1);
-  return $node;
+function domain_feeds_set_target_all($source, $entity, $target, $feed_element) {
+  $entity->domain_site = 1;
+  $entity->domain_source = 0;
+  
+  return $entity;
 }
