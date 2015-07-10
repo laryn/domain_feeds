@@ -11,6 +11,25 @@
  * @see FeedsNodeProcessor::getMappingTargets().
  */
 function domain_feeds_feeds_processor_targets_alter(&$targets, $entity_type, $bundle_name) {
+  // We support only user and node entities to import.
+  $available_entity_types = array(
+    'user' => array(
+      'field' => 'domain_user',
+      'title' => 'Assign to',
+    ),
+    'node' => array(
+      'field' => 'domains',
+      'title' => 'Publish to',
+    ),
+  );
+
+  if (!isset($available_entity_types[$entity_type])) {
+    // We don't interact with such entities.
+    return;
+  }
+
+  $entity_type_config = $available_entity_types[$entity_type];
+
   $options = array();
   // Get the display format of the form element.
   $format = domain_select_format();
@@ -20,23 +39,23 @@ function domain_feeds_feeds_processor_targets_alter(&$targets, $entity_type, $bu
     // The domain must be valid.
     if ($data['valid'] || user_access('access inactive domains')) {
       // Checkboxes must be filtered, select lists should not.
-      $targets['domains:'. $key] = array(
-        'name' => 'Publish to: '. (empty($format) ? check_plain($data['sitename']) : $data['sitename']),
+      $targets[$entity_type_config['field'] . ':'. $key] = array(
+        'name' => $entity_type_config['title'] . ': '. (empty($format) ? check_plain($data['sitename']) : $data['sitename']),
         'callback' => 'domain_feeds_set_target',
         'description' => t('Domain access options.'),
       );
     }
   }
 
-  $targets['domains:multiple'] = array(
-    'name' => 'Publish to (multiple)',
+  $targets[$entity_type_config['field'] . ':multiple'] = array(
+    'name' => $entity_type_config['title'] . ' (multiple)',
     'callback' => 'domain_feeds_set_target_multiple',
     'description' => t('Domain access options.'),
   );
 
   // Publish to All
-  $targets['domains:all'] = array(
-    'name' => 'Publish to: All',
+  $targets[$entity_type_config['field'] . ':all'] = array(
+    'name' => $entity_type_config['title'] . ': All',
     'callback' => 'domain_feeds_set_target_all',
     'description' => t('Domain access options.'),
   );
