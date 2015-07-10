@@ -16,10 +16,12 @@ function domain_feeds_feeds_processor_targets_alter(&$targets, $entity_type, $bu
     'user' => array(
       'field' => 'domain_user',
       'title' => 'Assign to',
+      'exclude' => array('all', 'domain_source'),
     ),
     'node' => array(
       'field' => 'domains',
       'title' => 'Publish to',
+      'exclude' => array(),
     ),
   );
 
@@ -55,12 +57,23 @@ function domain_feeds_feeds_processor_targets_alter(&$targets, $entity_type, $bu
     'description' => t('Domain access options.'),
   );
 
+  // Set domain source data.
+  if (module_exists('domain_source') && !in_array('domain_source', $entity_type_config['exclude'])) {
+    $targets[$entity_type_config['field'] . ':domain_source'] = array(
+      'name' => 'Domain Source',
+      'callback' => 'domain_feeds_set_domain_source',
+      'description' => t('Domain access options.'),
+    );
+  }
+
   // Publish to All.
-  $targets[$entity_type_config['field'] . ':all'] = array(
-    'name' => $entity_type_config['title'] . ': All',
-    'callback' => 'domain_feeds_set_target_all',
-    'description' => t('Domain access options.'),
-  );
+  if (!in_array('all', $entity_type_config['exclude'])) {
+    $targets[$entity_type_config['field'] . ':all'] = array(
+      'name' => $entity_type_config['title'] . ': All',
+      'callback' => 'domain_feeds_set_target_all',
+      'description' => t('Domain access options.'),
+    );
+  }
 }
 
 /**
@@ -117,5 +130,18 @@ function domain_feeds_set_target_all($source, $entity, $target, $feed_element) {
   $entity->domain_site = 1;
   $entity->domain_source = 0;
   
+  return $entity;
+}
+
+/**
+ * Callback for mapping. Here is where the actual mapping happens.
+ *
+ * When the callback is invoked, $value contains source domain ID we use to map
+ *  node to a domain_source data structure.
+ */
+function domain_feeds_set_domain_source($source, $entity, $target, $value, $mapping) {
+  $entity->domain_site = 0;
+  $entity->domain_source = $value;
+
   return $entity;
 }
