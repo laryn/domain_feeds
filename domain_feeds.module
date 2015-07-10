@@ -28,6 +28,7 @@ function domain_feeds_feeds_processor_targets_alter(&$targets, $entity_type, $bu
     return;
   }
 
+  // Pick configuration based on the type of entity.
   $entity_type_config = $available_entity_types[$entity_type];
 
   $options = array();
@@ -47,13 +48,14 @@ function domain_feeds_feeds_processor_targets_alter(&$targets, $entity_type, $bu
     }
   }
 
+  // Multiple domains in a cell.
   $targets[$entity_type_config['field'] . ':multiple'] = array(
     'name' => $entity_type_config['title'] . ' (multiple)',
     'callback' => 'domain_feeds_set_target_multiple',
     'description' => t('Domain access options.'),
   );
 
-  // Publish to All
+  // Publish to All.
   $targets[$entity_type_config['field'] . ':all'] = array(
     'name' => $entity_type_config['title'] . ': All',
     'callback' => 'domain_feeds_set_target_all',
@@ -88,12 +90,11 @@ function domain_feeds_set_target($source, $entity, $target, $feed_element) {
 }
 
 /**
- * @param $source
- * @param $entity
- * @param $target
- * @param array $values
- *   The domain IDs.
- * @param $mapping
+ * Callback for mapping. Here is where the actual mapping happens.
+ *
+ * When the callback is invoked, $target contains the name of the field the
+ * user has decided to map to and $value contains comma-separated list of values
+ * of the feed item element the user has picked as a source.
  */
 function domain_feeds_set_target_multiple($source, $entity, $target, $value, $mapping) {
   $values = explode(',', $value);
