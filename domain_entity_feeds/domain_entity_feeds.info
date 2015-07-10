@@ -1,0 +1,8 @@
+name = "Domain Feeds (Domain Access Entity integration)"
+description = "Provides Domain Access Entity mappers for Feed Importers"
+core = 7.x
+package = Feeds
+
+dependencies[] = domain
+dependencies[] = feeds
+dependencies[] = domain_entity
