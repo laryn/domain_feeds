@@ -28,6 +28,12 @@ function domain_feeds_feeds_processor_targets_alter(&$targets, $entity_type, $bu
     }
   }
 
+  $targets['domains:multiple'] = array(
+    'name' => 'Publish to (multiple)',
+    'callback' => 'domain_feeds_set_target_multiple',
+    'description' => t('Domain access options.'),
+  );
+
   // Publish to All
   $targets['domains:all'] = array(
     'name' => 'Publish to: All',
@@ -60,6 +66,24 @@ function domain_feeds_set_target($source, $entity, $target, $feed_element) {
   }
 
   return $entity;
+}
+
+/**
+ * @param $source
+ * @param $entity
+ * @param $target
+ * @param array $values
+ *   The domain IDs.
+ * @param $mapping
+ */
+function domain_feeds_set_target_multiple($source, $entity, $target, $value, $mapping) {
+  $values = explode(',', $value);
+  list($target, $sub_field) = explode(':', $target);
+  foreach (domain_id_list() as $domain_id) {
+    $value = in_array($domain_id, $values) ? '1' : '0';
+    $key = ($domain_id == 0) ? -1 : $domain_id;
+    domain_feeds_set_target($source, $entity, $target . ':' . $key, $value, $mapping);
+  }
 }
 
 /**
