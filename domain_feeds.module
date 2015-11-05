@@ -83,14 +83,16 @@ function domain_feeds_feeds_processor_targets_alter(&$targets, $entity_type, $bu
  * user has decided to map to and $value contains the value of the feed item
  * element the user has picked as a source.
  */
-function domain_feeds_set_target($source, $entity, $target, $feed_element) {
+function domain_feeds_set_target($source, $entity, $target, array $values, $mapping) {
   list($target, $sub_field) = explode(':', $target);
   $field = !empty($entity->$target) ? $entity->$target : array();
-  
-  if ($sub_field === -1 && $feed_element) {
+
+  $value = reset($values);
+
+  if ($sub_field === -1 && $value) {
     $field[$sub_field] = -1;
-  } 
-  else if ($feed_element) {
+  }
+  else if ($value) {
     $field[$sub_field] = $sub_field;
   }
 
@@ -109,13 +111,14 @@ function domain_feeds_set_target($source, $entity, $target, $feed_element) {
  * user has decided to map to and $value contains comma-separated list of values
  * of the feed item element the user has picked as a source.
  */
-function domain_feeds_set_target_multiple($source, $entity, $target, $value, $mapping) {
+function domain_feeds_set_target_multiple($source, $entity, $target, array $values, $mapping) {
+  $value = reset($values);
   $values = explode(',', $value);
   list($target, $sub_field) = explode(':', $target);
   foreach (domain_id_list() as $domain_id) {
     $value = in_array($domain_id, $values) ? '1' : '0';
     $key = ($domain_id == 0) ? -1 : $domain_id;
-    domain_feeds_set_target($source, $entity, $target . ':' . $key, $value, $mapping);
+    domain_feeds_set_target($source, $entity, $target . ':' . $key, array($value), $mapping);
   }
 }
 
@@ -126,9 +129,11 @@ function domain_feeds_set_target_multiple($source, $entity, $target, $value, $ma
  * user has decided to map to and $value contains the value of the feed item
  * element the user has picked as a source.
  */
-function domain_feeds_set_target_all($source, $entity, $target, $feed_element) {
-  $entity->domain_site = 1;
-  $entity->domain_source = 0;
+function domain_feeds_set_target_all($source, $entity, $target, array $values, $mapping) {
+  if (reset($values)) {
+    $entity->domain_site = 1;
+    $entity->domain_source = 0;
+  }
   
   return $entity;
 }
@@ -139,7 +144,8 @@ function domain_feeds_set_target_all($source, $entity, $target, $feed_element) {
  * When the callback is invoked, $value contains source domain ID we use to map
  *  node to a domain_source data structure.
  */
-function domain_feeds_set_domain_source($source, $entity, $target, $value, $mapping) {
+function domain_feeds_set_domain_source($source, $entity, $target, array $values, $mapping) {
+  $value = reset($values);
   $entity->domain_site = 0;
   $entity->domain_source = $value;
 

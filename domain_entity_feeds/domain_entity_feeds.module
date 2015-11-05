@@ -34,9 +34,9 @@ function domain_entity_feeds_feeds_processor_targets_alter(&$targets, $entity_ty
  * user has decided to map to and $value contains comma-separated list of values
  * of the feed item element the user has picked as a source.
  */
-function domain_entity_feeds_set_target_multiple($source, $entity, $target, $value, $mapping) {
+function domain_entity_feeds_set_target_multiple($source, $entity, $target, $values, $mapping) {
   $domains = domain_id_list();
-  $values = explode(',', $value);
+  $values = explode(',', reset($values));
   list($sub_field, $target) = explode(':', $target);
   $attach_domains = array();
   foreach ($values as $domain_id) {
@@ -53,7 +53,8 @@ function domain_entity_feeds_set_target_multiple($source, $entity, $target, $val
  *
  * When the callback is invoked, if $target is presented, send item to all domains.
  */
-function domain_entity_feeds_send_to_all($source, $entity, $target, $value, $mapping) {
+function domain_entity_feeds_send_to_all($source, $entity, $target, $values, $mapping) {
+  $value = reset($values);
   if (empty($value)) {
     return;
   }
