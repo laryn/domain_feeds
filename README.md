@@ -17,7 +17,7 @@ Bugs and Feature requests should be reported in the
 ## Credits
 
 - Ported to Backdrop CMS by [Laryn Kragt Bakker](https://github.com/laryn).
-- Maintained for Drupal by [jim.m][https://www.drupal.org/u/jimm].
+- Maintained for Drupal by [jim.m](https://www.drupal.org/u/jimm).
 
 ## License
 
