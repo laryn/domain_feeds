@@ -33,7 +33,6 @@ function domain_feeds_feeds_processor_targets_alter(&$targets, $entity_type, $bu
   // Pick configuration based on the type of entity.
   $entity_type_config = $available_entity_types[$entity_type];
 
-  $options = array();
   // Get the display format of the form element.
   $format = domain_select_format();
   foreach (domain_domains() as $data) {
@@ -124,7 +123,7 @@ function domain_feeds_set_target_multiple($source, $entity, $target, array $valu
 
 /**
  * Callback for mapping. Here is where the actual mapping happens.
- * 
+ *
  * When the callback is invoked, $target contains the name of the field the
  * user has decided to map to and $value contains the value of the feed item
  * element the user has picked as a source.
@@ -134,7 +133,7 @@ function domain_feeds_set_target_all($source, $entity, $target, array $values, $
     $entity->domain_site = 1;
     $entity->domain_source = 0;
   }
-  
+
   return $entity;
 }
 

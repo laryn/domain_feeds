@@ -1,6 +1,7 @@
+type = module
 name = "Domain Feeds"
 description = "Provides Domain Access Mappers for Feed Importers"
-core = 7.x
+backdrop = 1.x
 package = Feeds
 
 dependencies[] = domain
